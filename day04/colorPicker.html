@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>컬러 피커</title>
+    <style>
+        .picker-wrapper {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px;
+        }
+
+        .color-canvas {
+            border: 1px solid #ccc;
+            cursor: crosshair;
+            border-radius: 4px;
+        }
+
+        .hue-bar {
+            border: 1px solid #ccc;
+            cursor: crosshair;
+            border-radius: 4px;
+        }
+
+        .result-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 0 20px 20px;
+        }
+
+        .result-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background-color: #ff0000;
+        }
+
+        .result-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .result-hex {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .result-rgb {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .copy-btn {
+            background-color: #1a6fd4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .copy-btn:hover {
+            background-color: #1558aa;
+        }
+
+        .cursor-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 2px #000;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+
+        .canvas-container {
+            position: relative;
+        }
+
+        .hue-cursor {
+            position: absolute;
+            left: -2px;
+            width: calc(100% + 4px);
+            height: 4px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 2px #000;
+            pointer-events: none;
+            transform: translateY(-50%);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="picker-wrapper">
+        <div class="canvas-container">
+            <canvas class="color-canvas" id="colorCanvas" width="300" height="300"></canvas>
+            <div class="cursor-dot" id="cursorDot"></div>
+        </div>
+        <div class="canvas-container">
+            <canvas class="hue-bar" id="hueBar" width="30" height="300"></canvas>
+            <div class="hue-cursor" id="hueCursor"></div>
+        </div>
+    </div>
+
+    <div class="result-box">
+        <div class="result-preview" id="resultPreview"></div>
+        <div class="result-info">
+            <span class="result-hex" id="resultHex">#FF0000</span>
+            <span class="result-rgb" id="resultRgb">rgb(255, 0, 0)</span>
+        </div>
+        <button class="copy-btn" onclick="copyHex()">복사</button>
+    </div>
+
+    <script>
+        const colorCanvas = document.getElementById('colorCanvas');
+        const hueBar = document.getElementById('hueBar');
+        const ctxColor = colorCanvas.getContext('2d');
+        const ctxHue = hueBar.getContext('2d');
+        const cursorDot = document.getElementById('cursorDot');
+        const hueCursor = document.getElementById('hueCursor');
+
+        let currentHue = 0;
+        let pickerX = 300;
+        let pickerY = 0;
+
+        // 색상 팔레트 그리기 (saturation x, brightness y)
+        function drawColorCanvas(hue) {
+            ctxColor.clearRect(0, 0, 300, 300);
+
+            // 왼쪽(흰색) → 오른쪽(순수 색상)
+            const gradH = ctxColor.createLinearGradient(0, 0, 300, 0);
+            gradH.addColorStop(0, '#fff');
+            gradH.addColorStop(1, `hsl(${hue}, 100%, 50%)`);
+            ctxColor.fillStyle = gradH;
+            ctxColor.fillRect(0, 0, 300, 300);
+
+            // 위(투명) → 아래(검정)
+            const gradV = ctxColor.createLinearGradient(0, 0, 0, 300);
+            gradV.addColorStop(0, 'rgba(0,0,0,0)');
+            gradV.addColorStop(1, 'rgba(0,0,0,1)');
+            ctxColor.fillStyle = gradV;
+            ctxColor.fillRect(0, 0, 300, 300);
+        }
+
+        // 색조(Hue) 막대 그리기
+        function drawHueBar() {
+            const grad = ctxHue.createLinearGradient(0, 0, 0, 300);
+            const stops = [0, 60, 120, 180, 240, 300, 360];
+            stops.forEach(h => {
+                grad.addColorStop(h / 360, `hsl(${h}, 100%, 50%)`);
+            });
+            ctxHue.fillStyle = grad;
+            ctxHue.fillRect(0, 0, 30, 300);
+        }
+
+        function getPixelColor(canvas, x, y) {
+            const ctx = canvas.getContext('2d');
+            const p = ctx.getImageData(x, y, 1, 1).data;
+            return { r: p[0], g: p[1], b: p[2] };
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0').toUpperCase()).join('');
+        }
+
+        function updateResult(r, g, b) {
+            const hex = rgbToHex(r, g, b);
+            document.getElementById('resultHex').textContent = hex;
+            document.getElementById('resultRgb').textContent = `rgb(${r}, ${g}, ${b})`;
+            document.getElementById('resultPreview').style.backgroundColor = hex;
+        }
+
+        function updateCursorDot(x, y) {
+            const rect = colorCanvas.getBoundingClientRect();
+            cursorDot.style.left = (rect.left + x + window.scrollX) + 'px';
+            cursorDot.style.top = (rect.top + y + window.scrollY) + 'px';
+        }
+
+        // 색상 팔레트 클릭/드래그
+        let isDraggingColor = false;
+
+        function pickColor(e) {
+            const rect = colorCanvas.getBoundingClientRect();
+            const x = Math.min(Math.max(0, e.clientX - rect.left), 299);
+            const y = Math.min(Math.max(0, e.clientY - rect.top), 299);
+            pickerX = x;
+            pickerY = y;
+            const { r, g, b } = getPixelColor(colorCanvas, x, y);
+            updateResult(r, g, b);
+            cursorDot.style.left = (rect.left + x + window.scrollX) + 'px';
+            cursorDot.style.top = (rect.top + y + window.scrollY) + 'px';
+        }
+
+        colorCanvas.addEventListener('mousedown', (e) => { isDraggingColor = true; pickColor(e); });
+        document.addEventListener('mousemove', (e) => { if (isDraggingColor) pickColor(e); });
+        document.addEventListener('mouseup', () => { isDraggingColor = false; });
+
+        // 명암 막대 클릭/드래그
+        let isDraggingHue = false;
+
+        function pickHue(e) {
+            const rect = hueBar.getBoundingClientRect();
+            const y = Math.min(Math.max(0, e.clientY - rect.top), 299);
+            currentHue = Math.round((y / 300) * 360);
+            hueCursor.style.top = y + 'px';
+            drawColorCanvas(currentHue);
+
+            const { r, g, b } = getPixelColor(colorCanvas, pickerX, pickerY);
+            updateResult(r, g, b);
+        }
+
+        hueBar.addEventListener('mousedown', (e) => { isDraggingHue = true; pickHue(e); });
+        document.addEventListener('mousemove', (e) => { if (isDraggingHue) pickHue(e); });
+        document.addEventListener('mouseup', () => { isDraggingHue = false; });
+
+        function copyHex() {
+            const hex = document.getElementById('resultHex').textContent;
+            navigator.clipboard.writeText(hex).then(() => {
+                alert(hex + ' 복사 완료!');
+            });
+        }
+
+        // 초기화
+        drawHueBar();
+        drawColorCanvas(0);
+        cursorDot.style.position = 'absolute';
+
+        // 초기 커서 위치 (오른쪽 상단 = 순수 빨강)
+        const initRect = colorCanvas.getBoundingClientRect();
+        cursorDot.style.left = (initRect.left + 299 + window.scrollX) + 'px';
+        cursorDot.style.top = (initRect.top + 0 + window.scrollY) + 'px';
+        hueCursor.style.top = '0px';
+    </script>
+</body>
+</html>
