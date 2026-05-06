@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+
+/*
+
+    화살표 함수는 다른 언어에서도 동일하게 사용
+    화살표 모양이 언어마다 조금 다르지만 의미는 동일하게 사용
+    익명함수를 축약하여 사용할 때 쓴다.
+
+*/
+
+// const altFnc = function(){
+//     alert('안녕');
+// }
+
+// const altFnc = () => {
+//     alert('안녕');
+// }
+
+//생략이 가능한 조건
+// 1. 코드가 return이 없고, 한줄이면 중괄호 생략이 가능
+
+const altFnc = () => alert('안녕');
+
+// 2. 함수의 매개변수가 한개인 경우, 소괄호를 생략 가능
+// const print = (conts) => console.log(conts);
+const print = conts => console.log(conts);
+
+// 3. 코드가 return 이 있는 한 줄일 경우, return과 중괄호를 같이 생략하는건 가능
+// const add = (x, y) => {
+//     return x + y;
+// }
+
+const add = (x, y) =>  x + y;
+
+// 4. 3번의 경우 return의 대상이 객체인 경우, 소괄호를 붙여줘여한다.
+
+// const getInfo = () =>{
+//     return{
+//         name : '홍길동',
+//         age : 500,
+//         country : '율도국'
+//     }
+// }
+const getInfo = () =>{
+    ({
+        name : '홍길동',
+        age : 500,
+        country : '율도국'
+    })
+}
+
+</script>
+</html>

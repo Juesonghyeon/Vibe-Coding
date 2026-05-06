@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div{
+            width: 100px;
+            height: 100px;
+            position: static;
+            background-color: yellow;
+            border: 1px solid;
+        }
+
+        .sts{
+            /*흐름에 따라 위치, 위치 변경 X*/
+            position: static;
+            top: 20px;
+            left: 100px;
+            margin-left: 100px;
+        }
+
+        .relative{
+            /*위치 변경이 가능 - 이전 위치는 유지*/
+            position: relative;
+            top: 20px;
+            left: 100px;
+        }
+
+        .relative2{
+            /*위치 변경이 가능*/
+            position: relative;            
+            background-color: brown;
+            top: -30px;
+            left: 100px;
+        }
+
+        .absolute{
+            /*독고다이 > 흐름 무시*/
+            /*위치의 기준이 document*/
+            /*realative 와 다르게 이동하면 장소가 안남음*/
+            position: absolute;       
+            background-color:purple;
+            top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sts">1</div>
+    <div class="relative">2</div>
+    <div class="relative2">3</div>
+    <div class="absolute">4</div>
+</body>
+</html>

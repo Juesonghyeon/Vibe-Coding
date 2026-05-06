@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로또 번호 추천</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <style>
+    body {
+      background: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 640px;
+      border: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #4a90d9, #357abd);
+      color: #fff;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      padding: 1.25rem;
+      border-bottom: none;
+    }
+
+    /* ── 태그 영역 ── */
+    .tag-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 32px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .tag-exclude {
+      background: #ffe0e0;
+      color: #c0392b;
+      border: 1px solid #f5c6cb;
+    }
+
+    .tag-fixed {
+      background: #e8f4fd;
+      color: #1a6da0;
+      border: 1px solid #bee5f8;
+    }
+
+    .tag-remove {
+      background: none;
+      border: none;
+      padding: 0;
+      line-height: 1;
+      cursor: pointer;
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+
+    .tag-remove:hover { opacity: 1; }
+
+    /* ── 번호 공 ── */
+    .ball {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .ball-yellow  { background: #FBC400; color: #000; }
+    .ball-blue    { background: #69C8F2; color: #000; }
+    .ball-red     { background: #FF7272; color: #fff; }
+    .ball-gray    { background: #AAAAAA; color: #fff; }
+    .ball-green   { background: #B0D840; color: #000; }
+
+    /* ── 결과 행 ── */
+    .game-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+      flex-wrap: wrap;
+    }
+
+    .game-row:last-child { border-bottom: none; }
+
+    .game-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6c757d;
+      min-width: 46px;
+    }
+
+    /* ── 입력 그룹 ── */
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .input-row input {
+      width: 90px;
+    }
+
+    /* ── 버튼 영역 ── */
+    .action-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btns .btn { flex: 1; min-width: 120px; }
+
+    @media (max-width: 400px) {
+      .ball { width: 38px; height: 38px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- 헤더 -->
+  <div class="card-header">🎱 로또 번호 추천</div>
+
+  <div class="card-body p-4">
+
+    <!-- 에러 메시지 -->
+    <div id="errorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+    <!-- 제외 번호 -->
+    <div class="mb-4">
+      <label class="form-label fw-semibold">제외 번호</label>
+      <div class="input-row">
+        <input
+          id="excludeInput"
+          type="text"
+          class="form-control"
+          placeholder="예) 3, 7~15, 22"
+          aria-label="제외 번호 입력"
+          inputmode="text"
+        />
+        <button
+          class="btn btn-outline-danger"
+          onclick="handleAdd('exclude')"
+          aria-label="제외 번호 추가"
+        >+</button>
+      </div>
+      <div id="excludeTags" class="tag-wrap"></div>
+    </div>
+
+    <!-- 지정 번호 -->
+    <div class="mb-4">
+      <label class="form-label fw-semibold">지정 번호</label>
+      <div class="input-row">
+        <input
+          id="fixedInput"
+          type="text"
+          class="form-control"
+          placeholder="예) 5, 12~14"
+          aria-label="지정 번호 입력"
+          inputmode="text"
+        />
+        <button
+          class="btn btn-outline-primary"
+          onclick="handleAdd('fixed')"
+          aria-label="지정 번호 추가"
+        >+</button>
+      </div>
+      <div id="fixedTags" class="tag-wrap"></div>
+    </div>
+
+    <hr />
+
+    <!-- 액션 버튼 -->
+    <div class="action-btns mb-4">
+      <button
+        class="btn btn-primary rounded-pill"
+        onclick="generate()"
+        aria-label="추천 번호 생성"
+      >추천 번호 생성</button>
+      <button
+        class="btn btn-outline-secondary rounded-pill"
+        onclick="resetAll()"
+        aria-label="전체 초기화"
+      >초기화</button>
+    </div>
+
+    <!-- 결과 영역 -->
+    <div id="result"></div>
+
+  </div>
+</div>
+
+<script>
+  /* ─────────────────────────────────────────
+   * 상태
+   * ───────────────────────────────────────── */
+  const state = {
+    excludes: new Set(),
+    fixed: new Set(),
+  };
+
+  /* ─────────────────────────────────────────
+   * 유틸
+   * ───────────────────────────────────────── */
+  /** 번호 → CSS 클래스 */
+  function ballClass(num) {
+    if (num <= 10) return 'ball-yellow';
+    if (num <= 20) return 'ball-blue';
+    if (num <= 30) return 'ball-red';
+    if (num <= 40) return 'ball-gray';
+    return 'ball-green';
+  }
+
+  /** 에러 메시지 표시 */
+  function showError(msg) {
+    const el = document.getElementById('errorAlert');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+  }
+
+  /** 에러 메시지 숨김 */
+  function clearError() {
+    const el = document.getElementById('errorAlert');
+    el.textContent = '';
+    el.classList.add('d-none');
+  }
+
+  /* ─────────────────────────────────────────
+   * 유효성 검사
+   * ───────────────────────────────────────── */
+  /**
+   * @param {number} num
+   * @param {'exclude'|'fixed'} type
+   * @returns {{ ok: boolean, message: string }}
+   */
+  function validate(num, type) {
+    if (!Number.isInteger(num) || num < 1 || num > 45) {
+      return { ok: false, message: '1 ~ 45 사이의 숫자만 입력할 수 있습니다.' };
+    }
+
+    if (type === 'exclude') {
+      if (state.excludes.has(num)) {
+        return { ok: false, message: `${num}은(는) 이미 제외 번호에 추가되어 있습니다.` };
+      }
+    } else {
+      if (state.fixed.has(num)) {
+        return { ok: false, message: `${num}은(는) 이미 지정 번호에 추가되어 있습니다.` };
+      }
+      if (state.fixed.size >= 5) {
+        return { ok: false, message: '지정 번호는 최대 5개까지만 추가할 수 있습니다.' };
+      }
+    }
+
+    return { ok: true, message: '' };
+  }
+
+  /* ─────────────────────────────────────────
+   * 태그 추가 / 삭제
+   * ───────────────────────────────────────── */
+  /**
+   * @param {number} num
+   * @param {'exclude'|'fixed'} type
+   */
+  function addTag(num, type) {
+    state[type === 'exclude' ? 'excludes' : 'fixed'].add(num);
+    renderTags(type);
+  }
+
+  /**
+   * @param {number} num
+   * @param {'exclude'|'fixed'} type
+   */
+  function removeTag(num, type) {
+    state[type === 'exclude' ? 'excludes' : 'fixed'].delete(num);
+    renderTags(type);
+  }
+
+  /** 태그 목록 재렌더링 */
+  function renderTags(type) {
+    const containerId = type === 'exclude' ? 'excludeTags' : 'fixedTags';
+    const container = document.getElementById(containerId);
+    const set = type === 'exclude' ? state.excludes : state.fixed;
+    const icon = type === 'exclude' ? '❌' : '📌';
+    const cssClass = type === 'exclude' ? 'tag-exclude' : 'tag-fixed';
+
+    container.innerHTML = [...set]
+      .sort((a, b) => a - b)
+      .map(num => `
+        <span class="tag ${cssClass}">
+          ${icon} ${num}
+          <button
+            class="tag-remove"
+            onclick="removeTag(${num}, '${type}')"
+            aria-label="${num} 제거"
+          >✕</button>
+        </span>
+      `).join('');
+  }
+
+  /**
+   * 입력 문자열 → 번호 배열로 파싱
+   * 지원 형식: "3", "3,7,15", "3~10", "3,7~10,22"
+   * @param {string} raw
+   * @returns {{ nums: number[], error: string }}
+   */
+  function parseInput(raw) {
+    const tokens = raw.split(',').map(s => s.trim()).filter(Boolean);
+    if (tokens.length === 0) return { nums: [], error: '번호를 입력해주세요.' };
+
+    const nums = [];
+    for (const token of tokens) {
+      if (token.includes('~')) {
+        const parts = token.split('~');
+        if (parts.length !== 2) return { nums: [], error: `'${token}' 형식이 올바르지 않습니다. (예: 3~10)` };
+
+        const from = parseInt(parts[0], 10);
+        const to = parseInt(parts[1], 10);
+
+        if (isNaN(from) || isNaN(to)) return { nums: [], error: `'${token}' 범위에 숫자가 아닌 값이 있습니다.` };
+        if (from < 1 || from > 45 || to < 1 || to > 45) return { nums: [], error: `'${token}' 범위는 1~45 안이어야 합니다.` };
+        if (from > to) return { nums: [], error: `'${token}' 시작 값이 끝 값보다 큽니다.` };
+
+        for (let n = from; n <= to; n++) nums.push(n);
+      } else {
+        const n = parseInt(token, 10);
+        if (isNaN(n)) return { nums: [], error: `'${token}'은(는) 유효하지 않은 값입니다.` };
+        if (n < 1 || n > 45) return { nums: [], error: `'${token}'은(는) 1~45 범위를 벗어납니다.` };
+        nums.push(n);
+      }
+    }
+
+    // 중복 제거 (같은 입력 내)
+    return { nums: [...new Set(nums)], error: '' };
+  }
+
+  /** 입력창 → 태그 추가 핸들러 */
+  function handleAdd(type) {
+    clearError();
+    const inputId = type === 'exclude' ? 'excludeInput' : 'fixedInput';
+    const input = document.getElementById(inputId);
+    const raw = input.value.trim();
+
+    const { nums, error } = parseInput(raw);
+    if (error) {
+      showError(error);
+      input.focus();
+      return;
+    }
+
+    const errors = [];
+    let added = 0;
+
+    for (const num of nums) {
+      const { ok, message } = validate(num, type);
+      if (!ok) {
+        errors.push(message);
+      } else {
+        addTag(num, type);
+        added++;
+      }
+    }
+
+    if (errors.length > 0) {
+      showError(errors[0] + (errors.length > 1 ? ` 외 ${errors.length - 1}건` : ''));
+    }
+
+    if (added > 0) {
+      input.value = '';
+    }
+    input.focus();
+  }
+
+  /** Enter 키 지원 */
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('excludeInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleAdd('exclude');
+    });
+    document.getElementById('fixedInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleAdd('fixed');
+    });
+  });
+
+  /* ─────────────────────────────────────────
+   * 번호 생성
+   * ───────────────────────────────────────── */
+  /**
+   * 게임 1줄(6개) 생성
+   * @param {number[]} excludes
+   * @param {number[]} fixed
+   * @returns {number[]}
+   */
+  function pickNums(excludes, fixed) {
+    const excludeSet = new Set(excludes);
+    const pool = [];
+
+    for (let i = 1; i <= 45; i++) {
+      if (!excludeSet.has(i) && !fixed.includes(i)) {
+        pool.push(i);
+      }
+    }
+
+    // Fisher-Yates shuffle on pool
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    const needed = 6 - fixed.length;
+    const picked = pool.slice(0, needed);
+    return [...fixed, ...picked].sort((a, b) => a - b);
+  }
+
+  /**
+   * 5게임 생성
+   * @param {number[]} excludes
+   * @param {number[]} fixed
+   * @returns {number[][]}
+   */
+  function pickGames(excludes, fixed) {
+    return Array.from({ length: 5 }, () => pickNums(excludes, fixed));
+  }
+
+  /* ─────────────────────────────────────────
+   * 결과 렌더링
+   * ───────────────────────────────────────── */
+  /** @param {number[][]} games */
+  function renderGames(games) {
+    const container = document.getElementById('result');
+    container.innerHTML = games.map((nums, i) => `
+      <div class="game-row">
+        <span class="game-label">${i + 1}게임</span>
+        ${nums.map(n => `
+          <div class="ball ${ballClass(n)}" aria-label="번호 ${n}">${n}</div>
+        `).join('')}
+      </div>
+    `).join('');
+  }
+
+  /* ─────────────────────────────────────────
+   * 생성 진입점
+   * ───────────────────────────────────────── */
+  function generate() {
+    clearError();
+
+    const excludes = [...state.excludes];
+    const fixed = [...state.fixed];
+
+    // 지정 번호 ↔ 제외 번호 중복 검사
+    const overlap = fixed.filter(n => state.excludes.has(n));
+    if (overlap.length > 0) {
+      showError(`지정 번호와 제외 번호가 중복됩니다: ${overlap.join(', ')}`);
+      return;
+    }
+
+    // 풀 부족 검사: 전체 45개 - 제외 - 지정으로 이미 사용된 번호 = 남은 풀
+    // 필요한 추가 번호 = 6 - fixed.length
+    const poolSize = 45 - excludes.length - fixed.length;
+    const needed = 6 - fixed.length;
+    if (poolSize < needed) {
+      showError('제외 번호가 너무 많아 번호를 생성할 수 없습니다. 제외 번호를 줄여주세요.');
+      return;
+    }
+
+    const games = pickGames(excludes, fixed);
+    renderGames(games);
+  }
+
+  /* ─────────────────────────────────────────
+   * 초기화
+   * ───────────────────────────────────────── */
+  function resetAll() {
+    document.getElementById('result').innerHTML = '';
+    clearError();
+  }
+</script>
+</body>
+</html>

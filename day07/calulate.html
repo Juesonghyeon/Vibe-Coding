@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>사칙연산 계산기</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="calculator">
+      <h1>사칙연산 계산기</h1>
+
+      <div class="input-group">
+        <div>
+          <label for="numA">첫 번째 숫자</label>
+          <input type="number" id="numA" placeholder="숫자를 입력하세요" />
+          <p class="error-text" id="errorA"></p>
+        </div>
+        <div>
+          <label for="numB">두 번째 숫자</label>
+          <input type="number" id="numB" placeholder="숫자를 입력하세요" />
+          <p class="error-text" id="errorB"></p>
+        </div>
+      </div>
+
+      <div class="operator-group">
+        <label>연산자 선택</label>
+        <div class="operator-buttons">
+          <button class="operator-btn" data-op="+">＋</button>
+          <button class="operator-btn" data-op="-">－</button>
+          <button class="operator-btn" data-op="*">×</button>
+          <button class="operator-btn" data-op="/">÷</button>
+        </div>
+      </div>
+
+      <button class="calculate-btn" id="calculateBtn">계산하기</button>
+
+      <div class="result-box">
+        <span class="result-label">결과</span>
+        <span class="result-value" id="resultValue">—</span>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>

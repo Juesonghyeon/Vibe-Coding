@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            border: 1px solid black;
+            width: 500px;
+            height: 400px;
+            margin: 10px auto;
+            display: flex;
+            flex-wrap: wrap;
+            overflow: auto;
+            gap: 10px;
+            padding: 10px;
+            align-content: flex-start;
+        }
+
+        .frm {
+
+            width: 95vw;
+            height: 400px;
+            text-align: center;
+        }
+
+        .item{
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+            background-color: brown;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container"></div>
+
+    <div class="frm">
+        <label for="count">계수</label>
+        <input type="number" id="count" placeholder="만들고 싶은 박스 계수">
+    </div>
+    <div>
+        <button type="button" id="okBtn">생성</button>
+    </div>
+</body>
+<script>
+
+function makeBox(){
+    //html 태그 또는 html 에서 가져오는 data는
+    // 대부분 const 타입으로 만든다. 왜냐? 입력값을
+    //자바스크립트에서 사용하기 때문에 데이터는 read-only 여야 한다.
+    const count = document.querySelector('#count').value;
+    if(count <= 0){
+        alert('개수는 0보다 커야합니다.');
+        return false;
+    }
+        
+    //캔버스 가져오기
+    const container = document.querySelector('#container');
+    let boxCnt = 0;
+    while(boxCnt < count){
+        const box = document.createElement('div');
+        box.className = 'item';
+        container.append(box);
+
+        boxCnt++;
+    }
+}
+    //자동실행 함수
+(function(){
+    //버튼에 이벤트를 자바스크립트로 부여
+    const okBtn = document.querySelector('#okBtn');
+    //이벤트 리스너는 발생하는 이벤트를 듣는자!
+    okBtn.addEventListener('click', makeBox);
+
+})();
+</script>
+</html>

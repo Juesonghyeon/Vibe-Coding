@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button type="button" id="helloBtn">안녕버튼</button>
+</body>
+<script>
+
+    /*
+        콜백함수는 함수의 매개변수로 전달되는 함수를
+        콜백함수라고 한다.
+    */
+
+    //콜백함수
+    const hello = () => alert('안녕');
+
+    (function(){
+        const helloBtn = document.querySelector('#helloBtn');
+
+        helloBtn.addEventListener('click', hello);
+    })
+</script>
+</html>

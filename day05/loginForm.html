@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .loginFrm{
+            width: 500px;
+            height: 250px;
+            border: 1px solid black;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            box-sizing: border-box;
+            padding: 15px;
+            box-shadow: 1px 1px 10px 1px rgb(241, 211, 241);
+
+        }        
+        form > div{
+            margin-bottom: 10px;
+        }
+
+        form input{
+            height: 36px;
+            width: 300px;
+            outline: none;
+            border: none;
+            border-bottom: 1px solid black;
+        }
+
+        .btn{
+            width: 90px;
+            height: 36px;
+            color: white;
+            background-color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn-primary{
+            background-color: #4a36e6;
+        }
+
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="loginFrm">
+            <div>
+                <h2>로그인</h2>
+            </div>
+            <div>
+                <form>
+                    <div>
+                        <input type="text" id="userId" placeholder="아이디를 입력하세요">
+                    </div>
+                    <div>
+                        <input type="password" id="passwd" placeholder="패스워드를 입력하세요">
+                    </div>
+                    <div style="text-align: center;">
+                        <button type="button" class="btn btn-primary" onclick="goLogin()">로그인</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+
+    //기본 함수 -> 생성시 함수자체가 메모리에 등록된다.
+    //여러 사용자가 수시로 쓰는 기능
+    /* function goLogin(){
+
+    }*/
+
+    //익명 함수 -> 변수는 기억은 하지만, 함수는 실행 시 등록됨 > 이벤트 처리할 때 사용
+    const goLogin = function(){
+        // const userId = document.getElementById('userId').value;
+        // const passwd = document.getElementById('passwd').value;
+
+        //가져오기2 > 선택자 사용 > css와 동일
+        // 아이디 # + 아이디
+        // 클래스 . + 클래스
+        // tag    +  태그명
+        // name   :  태그명
+        const userId = document.querySelector('#userId').value; // 무조건 문자로 반환
+        const passwd = document.querySelector('#passwd').value;
+
+        //trim() > 좌우 여백 제거
+        //length > 길이 가져오기
+        //user.trim().length <- .은 체이닝방식
+        if( userId.trim().length === 0 ){
+            alert("아이디를 입력하십시오.");
+            return false; //함수 종료
+        }
+
+        if( passwd.trim().length === 0 ){
+            alert("패스워드를 입력하십시오.");
+            return false; //함수 종료
+        }
+
+        alert("로그인");
+    }
+
+</script>
+</html>

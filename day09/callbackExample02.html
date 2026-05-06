@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <label for="msgTxt"></label>
+    <input type="text" id="msgTxt">
+    <button type="button" id="helloBtn">전송</button>
+</body>
+<script>
+
+    /*
+        콜백함수에 매개변수가 있는 경우.
+        그대로 사용하면 지정이 아니라 호출이 되버린다.
+        그래서 외부에 익명함수로 감싸서 처리를 해야한다.
+    */
+
+    //콜백함수
+    const hello = (msg) => alert(msg);
+
+    popupMsg = () => {
+        const helloBtn = document.querySelector('#helloBtn');
+
+        helloBtn.addEventListener('click',() => hello("안녕"));
+    }
+    (function(){
+        popupMsg();
+    })();
+</script>
+</html>

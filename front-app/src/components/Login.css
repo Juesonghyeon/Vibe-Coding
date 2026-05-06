@@ -1,0 +1,113 @@
+/* 전체 페이지 배경 및 중앙 정렬 */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+}
+
+/* 로그인 카드 */
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 328px;
+  padding: 48px 40px 40px 40px;
+  background-color: #0a1628;
+  border-radius: 24px;
+  box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.25);
+}
+
+/* 로고 영역 */
+.login-top-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 50px;
+}
+
+.login-logo-text {
+  color: #ffffff;
+  font-family: Inter, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+
+/* 입력 필드 */
+.login-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background-color: #ffffff;
+  border: 1px solid #2a3a5a;
+  border-radius: 10px;
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  color: #333333;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.login-input::placeholder {
+  color: #999999;
+}
+
+.login-input:focus {
+  border-color: #7c5cbf;
+}
+
+/* 버튼 영역 */
+.login-button-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  width: 100%;
+}
+
+/* 공통 버튼 스타일 */
+.login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 48px;
+  border: none;
+  border-radius: 10px;
+  font-family: Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.login-btn:hover {
+  opacity: 0.85;
+}
+
+.login-btn:active {
+  opacity: 0.7;
+}
+
+/* 로그인 버튼 */
+.login-btn--primary {
+  background-color: #1a3a6b;
+}
+
+/* 회원가입 버튼 */
+.login-btn--secondary {
+  background-color: #7c5cbf;
+}

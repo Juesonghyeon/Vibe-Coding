@@ -1,0 +1,121 @@
+body {
+  background-color: #1a2a4a;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.search-section {
+  padding: 2rem 0 1rem;
+}
+
+.search-input {
+  border-radius: 50px 0 0 50px;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+.search-input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: none;
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+.search-btn {
+  border-radius: 0 50px 50px 0;
+  padding: 0.75rem 1.5rem;
+  background: #4a9eff;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-btn:hover {
+  background: #2282ee;
+}
+
+.weather-card {
+  background: #0f2744;
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.city-name {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.weather-desc {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.7);
+  text-transform: capitalize;
+}
+
+.weather-icon {
+  width: 100px;
+  height: 100px;
+}
+
+.temp-current {
+  font-size: 5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.temp-range {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.75);
+}
+
+.info-box {
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.info-label {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 0.2rem;
+}
+
+.info-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.error-box {
+  background: rgba(220, 53, 69, 0.2);
+  border: 1px solid rgba(220, 53, 69, 0.5);
+  border-radius: 12px;
+  color: #ff8a90;
+  padding: 1rem 1.5rem;
+  max-width: 480px;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+@media (max-width: 576px) {
+  .temp-current {
+    font-size: 4rem;
+  }
+
+  .weather-card {
+    padding: 2rem 1.2rem;
+  }
+}
